@@ -68,4 +68,10 @@ public class LoginView extends JFrame {
             JOptionPane.showMessageDialog(this, "Credenciales incorrectas", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LoginView login = new LoginView();
+            login.setVisible(true);
+        });
+    }
 }

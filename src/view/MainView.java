@@ -25,7 +25,7 @@ public class MainView extends JFrame {
         cargarReservas();
     }
 
-    private void initComponents() {
+     public void initComponents() {
         setTitle("Peluquería - Sistema de Gestión");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,7 +117,7 @@ public class MainView extends JFrame {
         });
     }
 
-    private void cargarReservas() {
+     public void cargarReservas() {
         List<ReservaServicio> reservas = reservaController.obtenerTodasReservas();
         panelReservas.removeAll();
 
@@ -151,4 +151,27 @@ public class MainView extends JFrame {
         panelReservas.revalidate();
         panelReservas.repaint();
     }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // Crear empleado de prueba
+            Empleado empleadoDemo = new Empleado();
+            empleadoDemo.setNombre("Juan");
+            empleadoDemo.setApellido("Ortega");
+            empleadoDemo.setIdTipoEmpleado(1); // 1 = administrador, 2 = empleado normal
+            empleadoDemo.setPassword("1234");
+
+            // Mostrar vista principal
+            MainView mainView = new MainView(empleadoDemo);
+            mainView.setVisible(true);
+        });
+    }
+
+//    public static void main(String[] args) {
+//        Empleado empleado = new Empleado();
+//        empleado.setIdEmpleado(empleado.getIdEmpleado());
+//        empleado.setIdEmpleado(JFrame.DISPOSE_ON_CLOSE);
+//        empleado.setActivo(true);
+//        empleado.getClass();
+//    }
 }

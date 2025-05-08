@@ -287,10 +287,18 @@ public class GestionServiciosView extends JFrame {
         txtDuracion.setText("");
         tablaServicios.clearSelection();
     }
-//    public static void main(String[] args) {
-//        GestionServiciosView dialog = new GestionServiciosView();
-//        dialog.pack();
-//        dialog.setVisible(true);
-//        System.exit(0);
-//    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // Empleado de prueba
+            model.Empleado empleadoDemo = new model.Empleado();
+            empleadoDemo.setNombre("Juan");
+            empleadoDemo.setApellido("Pérez");
+            empleadoDemo.setIdTipoEmpleado(1); // 1 = admin, 2 = empleado normal
+
+            MainView mainView = new MainView(empleadoDemo);
+            mainView.setVisible(true);
+        });
+    }
+
 }
