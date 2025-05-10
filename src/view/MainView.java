@@ -17,6 +17,8 @@ public class MainView extends JFrame {
     private JButton btnSalir;
     private JPanel panelReservas;
     private ReservaController reservaController;
+    private JButton btnActualizar;
+
 
     public MainView(Empleado empleado) {
         this.empleadoActual = empleado;
@@ -48,6 +50,8 @@ public class MainView extends JFrame {
         btnBuscarCliente = new JButton("Buscar Cliente");
         btnGestionServicios = new JButton("Gestión de Servicios");
         btnSalir = new JButton("Salir");
+        btnActualizar = new JButton("Actualizar");
+        buttonsPanel.add(btnActualizar);
 
         buttonsPanel.add(btnNuevaReserva);
         buttonsPanel.add(btnBuscarCliente);
@@ -115,14 +119,27 @@ public class MainView extends JFrame {
                 dispose();
             }
         });
+
+         btnActualizar.addActionListener(new ActionListener() {
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 cargarReservas(); // recarga la lista desde el controlador
+             }
+         });
+
     }
 
-     public void cargarReservas() {
+    public void cargarReservas() {
         List<ReservaServicio> reservas = reservaController.obtenerTodasReservas();
+
+        System.out.println("Reservas encontradas: " + reservas.size()); // LOG para depuración
+
         panelReservas.removeAll();
 
-        if (reservas.isEmpty()) {
-            panelReservas.add(new JLabel("No hay reservas registradas"));
+        if (reservas == null || reservas.isEmpty()) {
+            JLabel lblVacio = new JLabel("No hay reservas registradas");
+            lblVacio.setFont(new Font("Arial", Font.PLAIN, 14));
+            panelReservas.add(lblVacio);
         } else {
             for (ReservaServicio reserva : reservas) {
                 JPanel panelReserva = new JPanel(new BorderLayout());
@@ -152,6 +169,7 @@ public class MainView extends JFrame {
         panelReservas.repaint();
     }
 
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             // Crear empleado de prueba
@@ -167,11 +185,4 @@ public class MainView extends JFrame {
         });
     }
 
-//    public static void main(String[] args) {
-//        Empleado empleado = new Empleado();
-//        empleado.setIdEmpleado(empleado.getIdEmpleado());
-//        empleado.setIdEmpleado(JFrame.DISPOSE_ON_CLOSE);
-//        empleado.setActivo(true);
-//        empleado.getClass();
-//    }
-}
+

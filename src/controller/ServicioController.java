@@ -13,6 +13,7 @@ public class ServicioController {
     public ServicioController() {
         this.servicioDAO = new ServicioDAO();
     }
+
     public boolean actualizarServicio(Servicio servicio) {
         try {
             return servicioDAO.updateServicio(servicio);
@@ -50,8 +51,11 @@ public class ServicioController {
     }
 
     public boolean crearServicio(Servicio servicio) {
-
-
-        return false;
+        try {
+            return servicioDAO.insertServicio(servicio);
+        } catch (SQLException e) {
+            System.err.println("Error creando servicio: " + e.getMessage());
+            return false;
+        }
     }
 }

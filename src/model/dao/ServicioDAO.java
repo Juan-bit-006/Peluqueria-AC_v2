@@ -10,89 +10,78 @@ public class ServicioDAO {
 
     public List<Servicio> getAllServicios() throws SQLException {
         String sql = "SELECT * FROM Servicio WHERE activo = 1";
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
         List<Servicio> servicios = new ArrayList<>();
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Servicio servicio = new Servicio();
-                servicio.setIdServicio(rs.getInt("id_servicio"));
-                servicio.setDescripcion(rs.getString("descripcion"));
-                servicio.setPrecio(rs.getDouble("precio"));
-                servicio.setDuracionMinutos(rs.getInt("duracion_minutos"));
-                servicio.setActivo(rs.getBoolean("activo"));
-                servicios.add(servicio);
+                servicios.add(mapServicio(rs));
             }
-
-            return servicios;
-        } finally {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
         }
+        return servicios;
     }
 
     public Servicio getServicioById(int idServicio) throws SQLException {
         String sql = "SELECT * FROM Servicio WHERE id_servicio = ? AND activo = 1";
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Servicio servicio = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idServicio);
-            rs = stmt.executeQuery();
-
-
-
-
-
-            if (rs.next()) {
-                servicio = new Servicio();
-                servicio.setIdServicio(rs.getInt("id_servicio"));
-                servicio.setDescripcion(rs.getString("descripcion"));
-                servicio.setPrecio(rs.getDouble("precio"));
-                servicio.setDuracionMinutos(rs.getInt("duracion_minutos"));
-                servicio.setActivo(rs.getBoolean("activo"));
-            }
-
-            return servicio;
-        } finally {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-        }
-    }
-
-
-    public boolean updateServicio(Servicio servicio) throws SQLException {
-        String sql = "UPDATE servicios SET nombre = ?, descripcion = ?, precio = ?, duracion_minutos = ? WHERE id_servicio = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, servicio.getNombre());
-            stmt.setString(2, servicio.getDescripcion());
-            stmt.setDouble(3, servicio.getPrecio());
-            stmt.setInt(4, servicio.getDuracionMinutos());
+            stmt.setInt(1, idServicio);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapServicio(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean updateServicio(Servicio servicio) throws SQLException {
+        String sql = "UPDATE Servicio SET descripcion = ?, precio = ?, duracion_minutos = ?, activo = ? WHERE id_servicio = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, servicio.getDescripcion());
+            stmt.setDouble(2, servicio.getPrecio());
+            stmt.setInt(3, servicio.getDuracionMinutos());
+            stmt.setBoolean(4, servicio.getActivo());
             stmt.setInt(5, servicio.getIdServicio());
 
             return stmt.executeUpdate() > 0;
         }
     }
 
-    public boolean deleteServicio(int idServicio) throws   SQLException  {
-        String sql = "DELETE FROM servicios WHERE id_servicio = ?";
+    public boolean deleteServicio(int idServicio) throws SQLException {
+        String sql = "UPDATE Servicio SET activo = 0 WHERE id_servicio = ?"; // baja lógica
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idServicio);
             return stmt.executeUpdate() > 0;
         }
+    }
+
+    public boolean insertServicio(Servicio servicio) throws SQLException {
+        String sql = "INSERT INTO Servicio (descripcion, precio, duracion_minutos, activo) VALUES (?, ?, ?, 1)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, servicio.getDescripcion());
+            stmt.setDouble(2, servicio.getPrecio());
+            stmt.setInt(3, servicio.getDuracionMinutos());
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    private Servicio mapServicio(ResultSet rs) throws SQLException {
+        Servicio servicio = new Servicio();
+        servicio.setIdServicio(rs.getInt("id_servicio"));
+        servicio.setDescripcion(rs.getString("descripcion"));
+        servicio.setPrecio(rs.getDouble("precio"));
+        servicio.setDuracionMinutos(rs.getInt("duracion_minutos"));
+        servicio.setActivo(rs.getBoolean("activo"));
+        return servicio;
     }
 }

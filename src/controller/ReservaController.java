@@ -1,5 +1,5 @@
 package controller;
-
+import model.DatabaseConnection;
 import model.Reserva;
 import model.ReservaServicio;
 import model.Servicio;
@@ -34,9 +34,9 @@ public class ReservaController {
 
     public List<ReservaServicio> obtenerTodasReservas() {
         try {
-            return reservaDAO.getAllReservaServicios();
+            return reservaServicioDAO.getTodasLasReservas();
         } catch (SQLException e) {
-            System.err.println("Error obteniendo reservas: " + e.getMessage());
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }
@@ -54,10 +54,10 @@ public class ReservaController {
         try {
             Servicio servicio = servicioDAO.getServicioById(idServicio);
             if (servicio == null) {
+                System.err.println("Servicio no encontrado");
                 return false;
             }
 
-            // Calculate end time based on service duration
             long endTimeMillis = horaInicio.getTime() + (servicio.getDuracionMinutos() * 60 * 1000);
             Time horaFin = new Time(endTimeMillis);
 
@@ -71,10 +71,21 @@ public class ReservaController {
             );
 
             reserva.addServicio(reservaServicio);
-            return true;
+
+            // INSERTA directamente en la base de datos
+            boolean insertado = reservaServicioDAO.insertReservaServicio(reservaServicio, DatabaseConnection.getConnection());
+
+            if (!insertado) {
+                System.err.println("Error: El servicio no fue guardado en la base de datos.");
+            }
+
+            return insertado;
+
         } catch (SQLException e) {
             System.err.println("Error agregando servicio a reserva: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
+
 }

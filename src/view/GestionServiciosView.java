@@ -79,7 +79,7 @@ public class GestionServiciosView extends JFrame {
         // Panel de tabla
         String[] columnas = {"ID", "Nombre", "Descripción", "Precio", "Duración (min)"};
         Object[][] datos = {};
-        tablaServicios = new JTable(datos, columnas);
+        tablaServicios = new JTable();
         JScrollPane scrollPane = new JScrollPane(tablaServicios);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -136,23 +136,26 @@ public class GestionServiciosView extends JFrame {
     private void cargarServicios() {
         List<Servicio> servicios = servicioController.obtenerTodosServicios();
 
-        // Limpiar tabla
-        DefaultTableModel modelo = (DefaultTableModel) tablaServicios.getModel();
-        modelo.setRowCount(0);
+        // Columnas de la tabla
+        String[] columnas = {"ID", "Nombre", "Descripción", "Precio", "Duración (min)"};
+        DefaultTableModel modelo = new DefaultTableModel(null, columnas);
 
-        // Cargar datos
+        // Cargar datos en el modelo
         for (Servicio servicio : servicios) {
             Object[] fila = {
                     servicio.getIdServicio(),
-                    servicio.getActivo(),
+                    servicio.getNombre(), // Asegurate de que setNombre y getNombre están bien en tu clase Servicio
                     servicio.getDescripcion(),
                     servicio.getPrecio(),
-
                     servicio.getDuracionMinutos()
             };
             modelo.addRow(fila);
         }
+
+        // Actualizar modelo de la tabla ya existente (NO crear una nueva JTable)
+        tablaServicios.setModel(modelo);
     }
+
 
     private void cargarServicioSeleccionado(int fila) {
         txtNombre.setText(tablaServicios.getValueAt(fila, 1).toString());
@@ -290,12 +293,10 @@ public class GestionServiciosView extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Empleado de prueba
-            model.Empleado empleadoDemo = new model.Empleado();
+            Empleado empleadoDemo = new Empleado();
             empleadoDemo.setNombre("Juan");
             empleadoDemo.setApellido("Pérez");
-            empleadoDemo.setIdTipoEmpleado(1); // 1 = admin, 2 = empleado normal
-
+            empleadoDemo.setIdTipoEmpleado(1);
             MainView mainView = new MainView(empleadoDemo);
             mainView.setVisible(true);
         });
