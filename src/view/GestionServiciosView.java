@@ -296,7 +296,7 @@ public class GestionServiciosView extends JFrame {
             Empleado empleadoDemo = new Empleado();
             empleadoDemo.setNombre("Juan");
             empleadoDemo.setApellido("Pérez");
-            empleadoDemo.setIdTipoEmpleado(1);
+            empleadoDemo.setIdTipoEmpleado(2);
             MainView mainView = new MainView(empleadoDemo);
             mainView.setVisible(true);
         });
